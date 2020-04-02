@@ -7,11 +7,12 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.13.1"
 
-libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
+lazy val slickVersion = "5.0.0"
 
-// Adds additional packages into Twirl
-//TwirlKeys.templateImports += "com.github.kainpathoscrow.controllers._"
-
-// Adds additional packages into conf/routes
-// play.sbt.routes.RoutesKeys.routesImport += "com.github.kainpathoscrow.binders._"
+libraryDependencies ++= Seq(
+  guice,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
+  "org.postgresql" % "postgresql" % "42.2.11",
+  "com.typesafe.play" %% "play-slick" % slickVersion,
+  "com.typesafe.play" %% "play-slick-evolutions" % slickVersion
+)
