@@ -5,7 +5,7 @@ import models.Car
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)  {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -24,4 +24,19 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
   }
 
   private val cars = TableQuery[CarTable]
+
+  def create(model: String, color: String, number: String, manufactureYear: Int) : Future[Car] = db.run {
+    (cars.map(c => (c.model, c.color, c.number, c.manufactureYear))
+      returning cars.map(_.id)
+      into ((params, id) => Car(id, params._1, params._2, params._3, params._4))
+      ) += (model, color, number, manufactureYear)
+  }
+
+  def delete(id: Int) = db.run {
+    cars.filter(_.id === id).delete
+  }
+
+  def listAll(): Future[Seq[Car]] = db.run {
+    cars.result
+  }
 }
