@@ -13,7 +13,7 @@ class ColorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
   import dbConfig._
   import profile.api._
 
-  private class ColorTable(tag: Tag) extends Table[Color](tag, "colors") {
+  private class ColorTable(tag: Tag) extends Table[Color](tag, "Color") {
     def name = column[String]("name")
 
     def * = (name) <> (Color.apply, Color.unapply)

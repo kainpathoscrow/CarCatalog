@@ -13,7 +13,7 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
   import dbConfig._
   import profile.api._
 
-  private class CarTable(tag: Tag) extends Table[Car](tag, "cars") {
+  private class CarTable(tag: Tag) extends Table[Car](tag, "Car") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def model = column[String]("model")
     def color = column[String]("color")

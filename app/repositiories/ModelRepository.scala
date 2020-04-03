@@ -13,7 +13,7 @@ class ModelRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
   import dbConfig._
   import profile.api._
 
-  private class ModelTable(tag: Tag) extends Table[Model](tag, "models") {
+  private class ModelTable(tag: Tag) extends Table[Model](tag, "Model") {
     def name = column[String]("name")
 
     def * = (name) <> (Model.apply, Model.unapply)
