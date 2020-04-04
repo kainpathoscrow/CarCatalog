@@ -1,4 +1,4 @@
-package utils
+package utils.errors
 
 object ErrorConstants {
   val databaseTimeoutError = "Database Connection Timeout"

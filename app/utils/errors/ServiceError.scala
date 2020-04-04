@@ -1,4 +1,4 @@
-package utils
+package utils.errors
 
 sealed trait ServiceError {}
 

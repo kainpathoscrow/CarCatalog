@@ -9,13 +9,10 @@ import play.api.routing.sird._
 
 class CarRouter @Inject()(controller: CarController) extends SimpleRouter {
   override def routes: Router.Routes = {
-    case GET(p"/") =>
-      controller.read
+    case GET(p"/") => controller.read
 
-    case POST(p"/") =>
-      controller.create
+    case POST(p"/") => controller.create
 
-    case DELETE(p"/${int(id)}") =>
-      controller.delete(id)
+    case DELETE(p"/${int(id)}") => controller.delete(id)
   }
 }

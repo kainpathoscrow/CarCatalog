@@ -2,7 +2,7 @@ package services
 
 import javax.inject.Inject
 import repositiories.ModelRepository
-import utils.{DatabaseTimeoutError, ServiceError}
+import utils.errors.{DatabaseTimeoutError, ServiceError}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, TimeoutException}
