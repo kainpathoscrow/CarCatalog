@@ -1,19 +1,19 @@
 package services
 
-import java.sql.Timestamp
 import java.util.concurrent.Executors
 
 import javax.inject.Inject
-import models.{Car, CarDto, CarsRequestParams, CarStatistics}
+import models.{Car, CarDto, CarStatistics, CarsRequestParams}
+import org.postgresql.util.PSQLException
 import repositiories.{CarRepository, ColorRepository, ModelRepository}
-import utils.errors.{DatabaseTimeoutError, NotFoundError, ServiceError}
+import utils.errors.{AlreadyExistsError, DatabaseTimeoutError, NotFoundError, ServiceError}
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future, TimeoutException}
+import scala.concurrent.{Await, ExecutionContext, TimeoutException}
 
 class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepository, modelRepository: ModelRepository) {
   def create(car: CarDto): Either[ServiceError, Car] = {
-    try{
+    try {
       val colorAndModel = for {
         color <- Await.result(colorRepository.findByName(car.color), 5.seconds)
         model <- Await.result(modelRepository.findByName(car.model), 5.seconds)
@@ -24,12 +24,13 @@ class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepo
         case Some((color, model)) => Right(Await.result(repository.create(car.copy(color = color.name, model = model.name)), 10.seconds))
       }
     }
-    catch{
+    catch {
       case _: TimeoutException => Left(DatabaseTimeoutError)
+      case e: PSQLException if(e.getSQLState == "23505") => Left(AlreadyExistsError)
     }
   }
 
-  def read(carsRequestParams: CarsRequestParams): Either[ServiceError, Seq[Car]] = {
+  def read(carsRequestParams: Option[CarsRequestParams]): Either[ServiceError, Seq[Car]] = {
     try{
       val cars = Await.result(repository.list(carsRequestParams), 5.seconds)
       Right(cars)

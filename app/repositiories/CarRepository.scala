@@ -40,7 +40,7 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
     cars.filter(_.id === id).delete
   }
 
-  def list(carsRequestParams: CarsRequestParams): Future[Seq[Car]] = db.run {
+  def list(carsRequestParams: Option[CarsRequestParams]): Future[Seq[Car]] = db.run {
     cars.result
   }
 
