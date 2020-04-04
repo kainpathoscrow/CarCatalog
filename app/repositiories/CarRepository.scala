@@ -7,6 +7,7 @@ import models.{Car, CarDto, CarsRequestParams}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.sql.SqlProfile.ColumnOption.SqlType
+import utils.MaybeFilter
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,7 +42,20 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
   }
 
   def list(carsRequestParams: Option[CarsRequestParams]): Future[Seq[Car]] = db.run {
-    cars.result
+    carsRequestParams match {
+      case None => cars.result
+      case Some(params) => applyListFiltersAndOrders(params)
+    }
+  }
+  private def applyListFiltersAndOrders(carsRequestParams: CarsRequestParams) = {
+    MaybeFilter(cars)
+      .filter(carsRequestParams.manufactureYearMin)(f => c => c.manufactureYear >= f)
+      .filter(carsRequestParams.manufactureYearMax)(f => c => c.manufactureYear <= f)
+      .filter(carsRequestParams.number)(f => c => c.number === f)
+      .filter(carsRequestParams.model)(f => c => c.model.toUpperCase.inSet(f.map(_.toUpperCase)))
+      .filter(carsRequestParams.color)(f => c => c.color.toUpperCase.inSet(f.map(_.toUpperCase)))
+      .query
+      .result
   }
 
   def total: Future[Int] = db.run {

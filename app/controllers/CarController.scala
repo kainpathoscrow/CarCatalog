@@ -22,22 +22,11 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
     }
   }
 
-  def read = Action(parse.anyContent) { implicit request =>
-    if (!request.hasBody){
-      processRead(None)
-    }
-    else{
-      val requestJson = request.body.asJson
-      requestJson match {
-        case None => BadRequest("Could not parse body as JSON")
-        case Some(jsonBody) => {
-          jsonBody.validate[CarsRequestParams].fold(
-            errors => BadRequest(errors.mkString), // TODO human-readable error list
-            carsRequestParams => processRead(Some(carsRequestParams))
-          )
-        }
-      }
-    }
+  def read = Action(parse.json) { implicit request =>
+      request.body.validate[CarsRequestParams].fold(
+        errors => BadRequest(errors.mkString), // TODO human-readable error list
+        carsRequestParams => processRead(Some(carsRequestParams))
+      )
   }
   private def processRead(carsRequestParams: Option[CarsRequestParams]) = {
     val readResult = service.read(carsRequestParams)

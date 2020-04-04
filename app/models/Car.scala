@@ -20,7 +20,7 @@ object CarStatistics {
 
 // TODO paging (page, perPage params)
 case class CarsRequestParams(model: Option[List[String]], color: Option[List[String]], number: Option[String],
-                             yearMin: Option[Int], yearMax: Option[Int],
+                             manufactureYearMin: Option[Int], manufactureYearMax: Option[Int],
                              sortedBy: Option[String], sortedAsc: Option[Boolean])
 object CarsRequestParams {
   implicit val reads = Json.reads[CarsRequestParams]
