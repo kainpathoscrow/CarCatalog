@@ -11,3 +11,8 @@ case class CarDto(model: String, color: String, number: String, manufactureYear:
 object CarDto {
   implicit val reads = Json.reads[CarDto]
 }
+
+case class CarStatistics(totalCars: Int, firstCarCreationUtc: Option[Timestamp], lastCarCreationUtc: Option[Timestamp])
+object CarStatistics {
+  implicit val writes = Json.writes[CarStatistics]
+}

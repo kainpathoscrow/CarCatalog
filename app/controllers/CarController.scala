@@ -31,6 +31,14 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
     }
   }
 
+  def statistics = Action { implicit request =>
+    val statisticsResult = service.statistics
+    statisticsResult match {
+      case Left(error) => serviceErrorToActionResult(error)
+      case Right(statistics) => Ok(Json.toJson(statistics))
+    }
+  }
+
   def delete(id: Int) = Action { implicit request =>
     val deletionResult = service.delete(id)
     deletionResult match {

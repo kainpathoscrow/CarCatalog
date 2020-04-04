@@ -40,7 +40,21 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
     cars.filter(_.id === id).delete
   }
 
-  def listAll(): Future[Seq[Car]] = db.run {
+  def list: Future[Seq[Car]] = db.run {
     cars.result
+  }
+
+  def total: Future[Int] = db.run {
+    cars.length.result
+  }
+
+  // TODO firstCar can be expressed through list function + headOption
+  def firstCar: Future[Option[Car]] = db.run {
+    cars.sortBy(_.createdAt.asc).take(1).result.headOption
+  }
+
+  // TODO lastCar can be expressed through list function + headOption
+  def lastCar: Future[Option[Car]] = db.run {
+    cars.sortBy(_.createdAt.desc).take(1).result.headOption
   }
 }
