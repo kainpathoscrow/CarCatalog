@@ -24,7 +24,7 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
     def manufactureYear = column[Int]("manufacture_year")
     def createdAt = column[Timestamp]("created_at", SqlType("TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc')"))
 
-    def * = (id, model, color, number, manufactureYear, createdAt) <> (Car.tupled, Car.unapply)
+    def * = (id, model, color, number, manufactureYear, createdAt) <> ((Car.apply _).tupled, Car.unapply)
   }
 
   private val cars = TableQuery[CarTable]
