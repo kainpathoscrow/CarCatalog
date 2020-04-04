@@ -15,21 +15,27 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
     )
   }
 
-  def read = ???
+  private def processCreate(carDto: CarDto) = {
+    val creationResult = service.create(carDto)
+    creationResult match {
+      case Left(error) => serviceErrorToActionResult(error)
+      case Right(car) => Ok(Json.toJson(car))
+    }
+  }
+
+  def read = Action { implicit request =>
+    val readResult = service.read
+    readResult match {
+      case Left(error) => serviceErrorToActionResult(error)
+      case Right(cars) => Ok(Json.toJson(cars))
+    }
+  }
 
   def delete(id: Int) = Action { implicit request =>
     val deletionResult = service.delete(id)
     deletionResult match {
       case Left(error) => serviceErrorToActionResult(error)
       case Right(id) => Ok(Json.obj("deletedId" -> id))
-    }
-  }
-
-  private def processCreate(carDto: CarDto) = {
-    val createResult = service.create(carDto)
-    createResult match {
-      case Left(error) => serviceErrorToActionResult(error)
-      case Right(car) => Ok(Json.toJson(car))
     }
   }
 }

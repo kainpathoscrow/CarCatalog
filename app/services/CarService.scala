@@ -26,7 +26,15 @@ class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepo
     }
   }
 
-  def read = ???
+  def read = {
+    try{
+      val cars = Await.result(repository.listAll(), 5.seconds)
+      Right(cars)
+    }
+    catch{
+      case _: TimeoutException => Left(DatabaseTimeoutError)
+    }
+  }
 
   def delete(id: Int) = {
     try{
