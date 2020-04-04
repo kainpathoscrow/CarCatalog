@@ -21,7 +21,7 @@ class ModelRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
 
   private val models = TableQuery[ModelTable]
 
-  def list(): Future[Seq[Model]] = db.run {
+  def listAll(): Future[Seq[Model]] = db.run {
     models.result
   }
 }

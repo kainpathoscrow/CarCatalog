@@ -21,7 +21,7 @@ class ColorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
 
   private val colors = TableQuery[ColorTable]
 
-  def list(): Future[Seq[Color]] = db.run {
+  def listAll(): Future[Seq[Color]] = db.run {
     colors.result
   }
 }

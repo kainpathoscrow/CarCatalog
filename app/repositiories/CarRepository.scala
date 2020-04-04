@@ -27,7 +27,7 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
     def * = (id, model, color, number, manufactureYear, createdAt) <> (Car.tupled, Car.unapply)
   }
 
-  val cars = TableQuery[CarTable]
+  private val cars = TableQuery[CarTable]
 
   def create(model: String, color: String, number: String, manufactureYear: Int) : Future[Car] = db.run {
     (cars.map(c => (c.model, c.color, c.number, c.manufactureYear))
