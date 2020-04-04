@@ -2,10 +2,18 @@ package services
 
 import javax.inject.Inject
 import repositiories.ColorRepository
-import scala.concurrent.duration._
+import utils.{DatabaseTimeoutError, ServiceError}
 
-import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.concurrent.{Await, TimeoutException}
 
 class ColorService @Inject()(repository: ColorRepository){
-  def listAllColorNames(): Seq[String] = Await.result(repository.listAll(), 15.seconds).map(_.name)
+  def listAllColorNames(): Either[ServiceError, Seq[String]] = {
+    try{
+      Right(Await.result(repository.listAll(), 15.seconds).map(_.name))
+    }
+    catch{
+      case _: TimeoutException => Left(DatabaseTimeoutError)
+    }
+  }
 }
