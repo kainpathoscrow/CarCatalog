@@ -13,7 +13,7 @@ class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepo
     try{
       val colorAndModel = for {
         color <- Await.result(colorRepository.findByName(car.color), 5.seconds)
-        model <- Await.result(colorRepository.findByName(car.model), 5.seconds)
+        model <- Await.result(modelRepository.findByName(car.model), 5.seconds)
       } yield (color, model)
 
       colorAndModel match {
