@@ -5,7 +5,7 @@ import models.CarDto
 import play.api.libs.json.Json
 import play.api.mvc.{BaseController, ControllerComponents}
 import services.CarService
-import utils.DatabaseTimeoutError
+import utils.{DatabaseTimeoutError, NotFoundError}
 import utils.ErrorConstants._
 
 class CarController @Inject()(service: CarService, val controllerComponents: ControllerComponents) extends BaseController {
@@ -24,6 +24,7 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
     createResult match {
       case Left(error) => error match { // TODO "ServiceError to ActionResult" default function
         case DatabaseTimeoutError => InternalServerError(databaseTimeoutError)
+        case NotFoundError(description) => InternalServerError(description)
         case _ => InternalServerError(unknownError)
       }
       case Right(car) => Ok(Json.toJson(car))
