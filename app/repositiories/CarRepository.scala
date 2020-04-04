@@ -3,7 +3,7 @@ package repositiories
 import java.sql.Timestamp
 
 import javax.inject.Inject
-import models.{Car, CarDto}
+import models.{Car, CarDto, CarsRequestParams}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.sql.SqlProfile.ColumnOption.SqlType
@@ -40,7 +40,7 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
     cars.filter(_.id === id).delete
   }
 
-  def list: Future[Seq[Car]] = db.run {
+  def list(carsRequestParams: CarsRequestParams): Future[Seq[Car]] = db.run {
     cars.result
   }
 

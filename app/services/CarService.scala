@@ -4,7 +4,7 @@ import java.sql.Timestamp
 import java.util.concurrent.Executors
 
 import javax.inject.Inject
-import models.{Car, CarDto, CarStatistics}
+import models.{Car, CarDto, CarsRequestParams, CarStatistics}
 import repositiories.{CarRepository, ColorRepository, ModelRepository}
 import utils.errors.{DatabaseTimeoutError, NotFoundError, ServiceError}
 
@@ -29,9 +29,9 @@ class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepo
     }
   }
 
-  def read: Either[ServiceError, Seq[Car]] = {
+  def read(carsRequestParams: CarsRequestParams): Either[ServiceError, Seq[Car]] = {
     try{
-      val cars = Await.result(repository.list, 5.seconds)
+      val cars = Await.result(repository.list(carsRequestParams), 5.seconds)
       Right(cars)
     }
     catch{

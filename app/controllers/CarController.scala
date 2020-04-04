@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject.Inject
-import models.CarDto
+import models.{CarDto, CarsRequestParams}
 import play.api.libs.json.Json
 import play.api.mvc.{BaseController, ControllerComponents}
 import services.CarService
@@ -14,7 +14,6 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
       carDto => processCreate(carDto)
     )
   }
-
   private def processCreate(carDto: CarDto) = {
     val creationResult = service.create(carDto)
     creationResult match {
@@ -23,8 +22,14 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
     }
   }
 
-  def read = Action { implicit request =>
-    val readResult = service.read
+  def read = Action(parse.json) { implicit request =>
+    request.body.validate[CarsRequestParams].fold(
+      errors => BadRequest(errors.mkString), // TODO human-readable error list
+      carsRequestParams => processRead(carsRequestParams)
+    )
+  }
+  private def processRead(carsRequestParams: CarsRequestParams) = {
+    val readResult = service.read(carsRequestParams)
     readResult match {
       case Left(error) => serviceErrorToActionResult(error)
       case Right(cars) => Ok(Json.toJson(cars))
