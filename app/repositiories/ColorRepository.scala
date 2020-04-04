@@ -21,7 +21,11 @@ class ColorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
 
   private val colors = TableQuery[ColorTable]
 
-  def listAll(): Future[Seq[Color]] = db.run {
+  def listAll: Future[Seq[Color]] = db.run {
     colors.result
+  }
+
+  def findByName(name: String): Future[Option[Color]] = db.run {
+    colors.filter(_.name.toUpperCase === name.toUpperCase).result.headOption
   }
 }

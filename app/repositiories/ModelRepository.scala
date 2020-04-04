@@ -1,7 +1,7 @@
 package repositiories
 
 import javax.inject.{Inject, Singleton}
-import models.Model
+import models.{Color, Model}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
@@ -21,7 +21,11 @@ class ModelRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
 
   private val models = TableQuery[ModelTable]
 
-  def listAll(): Future[Seq[Model]] = db.run {
+  def listAll: Future[Seq[Model]] = db.run {
     models.result
+  }
+
+  def findByName(name: String): Future[Option[Model]] = db.run {
+    models.filter(_.name.toUpperCase === name.toUpperCase).result.headOption
   }
 }

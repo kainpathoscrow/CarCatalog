@@ -8,7 +8,7 @@ import utils.DatabaseTimeoutError
 
 class ColorController @Inject()(service: ColorService, val controllerComponents: ControllerComponents) extends BaseController {
   def read = Action { implicit request =>
-    val colorNames = service.listAllColorNames()
+    val colorNames = service.listAllColorNames
     colorNames match {
       case Left(error) => error match {
         case DatabaseTimeoutError => InternalServerError("Database Connection Timeout")

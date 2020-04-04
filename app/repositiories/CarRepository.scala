@@ -3,7 +3,7 @@ package repositiories
 import java.sql.Timestamp
 
 import javax.inject.Inject
-import models.Car
+import models.{Car, CarDto}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.sql.SqlProfile.ColumnOption.SqlType
@@ -29,11 +29,11 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
 
   private val cars = TableQuery[CarTable]
 
-  def create(model: String, color: String, number: String, manufactureYear: Int) : Future[Car] = db.run {
+  def create(car: CarDto) : Future[Car] = db.run {
     (cars.map(c => (c.model, c.color, c.number, c.manufactureYear))
       returning cars.map(car => (car.id, car.createdAt))
       into ((params, returns) => Car(returns._1, params._1, params._2, params._3, params._4, returns._2))
-      ) += (model, color, number, manufactureYear)
+      ) += (car.model, car.color, car.number, car.manufactureYear)
   }
 
   def delete(id: Int) = db.run {
