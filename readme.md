@@ -76,7 +76,7 @@ Creates a car with specified parameters. Returns created car:
     "createdAt": 1586061362023
 }
 ```
-Model/color value should be contained in the relevant list (see above).  
+Model/color value should be contained in the corresponding list (see above).  
 Manufacture year should be between 1885 and (current year + 5 year). 
 
 #### Read
