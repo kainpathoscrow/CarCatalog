@@ -6,6 +6,7 @@ import javax.inject.Inject
 import models.{Car, CarDto, CarsRequestParams}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
+import slick.lifted.ColumnOrdered
 import slick.sql.SqlProfile.ColumnOption.SqlType
 import utils.MaybeFilter
 
@@ -44,19 +45,33 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
   def list(carsRequestParams: Option[CarsRequestParams]): Future[Seq[Car]] = db.run {
     carsRequestParams match {
       case None => cars.result
-      case Some(params) => applyListFiltersAndOrders(params)
+      case Some(params) => applyCarsRequestParams(params)
     }
   }
-  private def applyListFiltersAndOrders(carsRequestParams: CarsRequestParams) = {
-    MaybeFilter(cars)
+  private def applyCarsRequestParams(carsRequestParams: CarsRequestParams) = {
+    val filtered = MaybeFilter(cars)
       .filter(carsRequestParams.manufactureYearMin)(f => c => c.manufactureYear >= f)
       .filter(carsRequestParams.manufactureYearMax)(f => c => c.manufactureYear <= f)
       .filter(carsRequestParams.number)(f => c => c.number === f)
       .filter(carsRequestParams.model)(f => c => c.model.toUpperCase.inSet(f.map(_.toUpperCase)))
       .filter(carsRequestParams.color)(f => c => c.color.toUpperCase.inSet(f.map(_.toUpperCase)))
       .query
-      .result
+
+    val orderAsc = carsRequestParams.sortedAsc.getOrElse(true)
+    def applyOrder(col: ColumnOrdered[_]) = if (orderAsc) col.asc else col.desc
+    val filteredAndOrdered = carsRequestParams.sortedBy match {
+      case None => filtered
+      case Some("model") => filtered.sortBy(f => applyOrder(f.model))
+      case Some("color") => filtered.sortBy(f => applyOrder(f.color))
+      case Some("number") => filtered.sortBy(f => applyOrder(f.number))
+      case Some("manufactureYear") => filtered.sortBy(f => applyOrder(f.manufactureYear))
+      case Some("createdAt") => filtered.sortBy(f => applyOrder(f.createdAt))
+      case _ => filtered
+    }
+
+    filteredAndOrdered.result
   }
+
 
   def total: Future[Int] = db.run {
     cars.length.result
