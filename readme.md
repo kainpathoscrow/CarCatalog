@@ -30,7 +30,7 @@ Returns a json array of available car colors:
 
 ### Models
 ```http
-GET /api/colors
+GET /api/models
 ```
 Returns a json array of available car models:
 ```json
