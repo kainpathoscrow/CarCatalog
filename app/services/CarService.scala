@@ -14,14 +14,25 @@ import scala.concurrent.{Await, ExecutionContext, TimeoutException}
 class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepository, modelRepository: ModelRepository) {
   def create(car: CarDto): Either[ServiceError, Car] = {
     try {
-      val colorAndModel = for {
-        color <- Await.result(colorRepository.findByName(car.color), 5.seconds)
-        model <- Await.result(modelRepository.findByName(car.model), 5.seconds)
+      val colorFindFuture = colorRepository.findByName(car.color)
+      val modelFindFuture = modelRepository.findByName(car.model)
+      implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(2))
+
+      val colorAndModelFuture = for {
+        color <- colorFindFuture
+        model <- modelFindFuture
       } yield (color, model)
+      val colorAndModel = Await.result(colorAndModelFuture, 5.seconds)
 
       colorAndModel match {
-        case None => Left(NotFoundError(s"""Color "${car.color}" or model "${car.model}" not found"""))
-        case Some((color, model)) => Right(Await.result(repository.create(car.copy(color = color.name, model = model.name)), 10.seconds))
+        case (None, None) => Left(NotFoundError(s"""Color "${car.color}" and model ${car.model} not found"""))
+        case (None, _) => Left(NotFoundError(s"""Color "${car.color}" not found"""))
+        case (_, None) => Left(NotFoundError(s"""Model "${car.model}" not found"""))
+        case (Some(color), Some(model)) => {
+          val creationFuture = repository.create(car.copy(color = color.name, model = model.name))
+          val creationResult = Await.result(creationFuture, 10.seconds)
+          Right(creationResult)
+        }
       }
     }
     catch {
