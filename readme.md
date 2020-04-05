@@ -109,7 +109,7 @@ Query parameters description:
 | `manufactureYearMax` | Maximal manufacture year |
 |**Sorting**|
 | `sortedBy` | Sorting parameter (model, color, number, manufactureYear or createdAt) |
-| `sortingDirection` | -1 for descending sorting, any other value for ascending<br>**Default: true** |
+| `sortingDirection` | -1 for descending sorting, any other value for ascending<br>**Default: ascending** |
 
 #### Delete
 ```http
