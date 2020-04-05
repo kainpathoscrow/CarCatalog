@@ -22,7 +22,7 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
     }
   }
 
-  def read = Action(parse.json) { implicit request =>
+  def read = Action(parse.json) { implicit request => // TODO better parse query string instead of json body
       request.body.validate[CarsRequestParams].fold(
         errors => BadRequest(errors.mkString), // TODO human-readable error list
         carsRequestParams => processRead(Some(carsRequestParams))
