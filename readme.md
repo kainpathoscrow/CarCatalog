@@ -30,7 +30,7 @@ Returns a json array of available car colors:
 
 ### Models
 ```http
-GET /api/colors
+GET /api/models
 ```
 Returns a json array of available car models:
 ```json
@@ -65,7 +65,7 @@ Body example (all parameters are **required**):
     "manufactureYear": 2000
 }
 ```
-Creates a car with specified parameters. Returns created car: 
+Creates a car with specified parameters. Returns the created car: 
 ```json
 {
     "id": 27,
@@ -76,7 +76,7 @@ Creates a car with specified parameters. Returns created car:
     "createdAt": 1586061362023
 }
 ```
-Model and color should be included in the relevant lists (see above).  
+Model/color value should be one of the values in the models/colors list (see above).  
 Manufacture year should be between 1885 and (current year + 5 year). 
 
 #### Read
@@ -115,8 +115,8 @@ Optional parameters description:
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 |**Filters**|
-| `model` | `array` | List of required car models |
-| `color` | `array` | List of required car colors |
+| `model` | `array` | List of suitable car models |
+| `color` | `array` | List of suitable car colors |
 | `number` | `string` | Exact car number |
 | `manufactureYearMin` | `integer` | Minimal manufacture year |
 | `manufactureYearMax` | `integer` | Maximal manufacture year |
@@ -128,8 +128,8 @@ Optional parameters description:
 ```http
 DELETE /api/cars/[car_id]
 ```
-Deletes a car with specific id.   
-Returns deleted car id:
+Deletes a car with a specific id.   
+Returns the deleted car's id:
 ```json
 {
     "deletedId": 26
