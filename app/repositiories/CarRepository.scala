@@ -73,18 +73,20 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
     filteredAndOrdered.result
   }
 
-
   def total: Future[Int] = db.run {
     cars.length.result
   }
-
   // TODO firstCar can be expressed through list function + headOption
   def firstCar: Future[Option[Car]] = db.run {
     cars.sortBy(_.createdAt.asc).take(1).result.headOption
   }
-
   // TODO lastCar can be expressed through list function + headOption
   def lastCar: Future[Option[Car]] = db.run {
     cars.sortBy(_.createdAt.desc).take(1).result.headOption
   }
+  // TODO findCarByNumber can be expressed through list function + headOption
+  def findCarByNumber(number: String): Future[Option[Car]] = db.run {
+    cars.filter(_.number === number).take(1).result.headOption
+  }
+
 }

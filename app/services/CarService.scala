@@ -4,7 +4,6 @@ import java.util.concurrent.Executors
 
 import javax.inject.Inject
 import models.{Car, CarDto, CarStatistics, CarsRequestParams}
-import org.postgresql.util.PSQLException
 import repositiories.{CarRepository, ColorRepository, ModelRepository}
 import utils.errors.{AlreadyExistsError, DatabaseTimeoutError, NotFoundError, ServiceError}
 
@@ -16,28 +15,29 @@ class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepo
     try {
       val colorFindFuture = colorRepository.findByName(car.color)
       val modelFindFuture = modelRepository.findByName(car.model)
-      implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(2))
+      val carWithSameNumberFuture = repository.findCarByNumber(car.number)
+      implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(3))
 
-      val colorAndModelFuture = for {
+      val colorModelAndCarFuture = for {
         color <- colorFindFuture
         model <- modelFindFuture
-      } yield (color, model)
-      val colorAndModel = Await.result(colorAndModelFuture, 5.seconds)
+        carWithSameNumber <- carWithSameNumberFuture
+      } yield (color, model, carWithSameNumber)
+      val colorModelAndCar = Await.result(colorModelAndCarFuture, 8.seconds)
 
-      colorAndModel match {
-        case (None, None) => Left(NotFoundError(s"""Color "${car.color}" and model ${car.model} not found"""))
-        case (None, _) => Left(NotFoundError(s"""Color "${car.color}" not found"""))
-        case (_, None) => Left(NotFoundError(s"""Model "${car.model}" not found"""))
-        case (Some(color), Some(model)) => {
+      colorModelAndCar match {
+        case (_, _, Some(_)) => Left(AlreadyExistsError(s"""Car with number "${car.number}" already exists"""))
+        case (None, None, _) => Left(NotFoundError(s"""Color "${car.color}" and model "${car.model}" not found"""))
+        case (None, _, _) => Left(NotFoundError(s"""Color "${car.color}" not found"""))
+        case (_, None, _) => Left(NotFoundError(s"""Model "${car.model}" not found"""))
+        case (Some(color), Some(model), _) =>
           val creationFuture = repository.create(car.copy(color = color.name, model = model.name))
           val creationResult = Await.result(creationFuture, 10.seconds)
           Right(creationResult)
-        }
       }
     }
     catch {
       case _: TimeoutException => Left(DatabaseTimeoutError)
-      case e: PSQLException if(e.getSQLState == "23505") => Left(AlreadyExistsError)
     }
   }
 
