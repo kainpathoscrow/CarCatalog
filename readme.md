@@ -5,6 +5,7 @@ Written using Scala, Play Framework, PostgreSQL+Slick and Caffeine caching.
 ## Deployment
 1. Configure conf/application.conf for your database connection (url, user, password)
 2. `sbt run` will run the app on **localhost:9000**
+3. Open localhost:9000 and apply migrations
 
 ## Api Reference
 ### Colors
