@@ -81,22 +81,9 @@ Manufacture year should be between 1885 and (current year + 5 year).
 
 #### Read
 ```http
-GET /api/cars
-Content-Type: application/json
+GET /api/cars?model=Lada&model=Audi&color=Red&color=Black&number=A777AA%2077&manufactureYearMin=1850&manufactureYearMax=2020&sortedBy=model&sortingDirection=-1
 ```
-Body example (all parameters are **optional**, but json must be valid):  
-```json
-{
-	"model": ["Lada", "Audi"],
-	"color": ["Red", "Black"],
-	"number": "A777AA 77",
-	"manufactureYearMin": 1850,
-	"manufactureYearMax": 2020,
-	"sortedBy": "createdAt",
-	"sortedAsc": true
-}
-```
-Returns a list of cars that match the criteria:
+Returns a list of cars that match the query string criteria (all parameters are **optional**):
 ```json
 [
     {
@@ -110,19 +97,19 @@ Returns a list of cars that match the criteria:
 ]
 ```
   
-Optional parameters description: 
+Query parameters description: 
 
-| Parameter | Type | Description |
-| :--- | :--- | :--- |
+| Parameter | Description |
+| :--- | :--- |
 |**Filters**|
-| `model` | `array` | List of suitable car models |
-| `color` | `array` | List of suitable car colors |
-| `number` | `string` | Exact car number |
-| `manufactureYearMin` | `integer` | Minimal manufacture year |
-| `manufactureYearMax` | `integer` | Maximal manufacture year |
+| `model` |  Car model <br> _Allowed multiple choice, like ?model=Lada&model=Audi_|
+| `color` |  Car color <br> _Allowed multiple choice, like ?color=Red&color=Black_ |
+| `number` | Exact car number |
+| `manufactureYearMin` | Minimal manufacture year |
+| `manufactureYearMax` | Maximal manufacture year |
 |**Sorting**|
-| `sortedBy` | `string` | Sorting parameter (model, color, number, manufactureYear or createdAt) |
-| `sortedAsc` | `boolean` | Ascending(true) or Descending(false) sort.<br>**Default: true** |
+| `sortedBy` | Sorting parameter (model, color, number, manufactureYear or createdAt) |
+| `sortingDirection` | -1 for descending sorting, any other value for ascending<br>**Default: true** |
 
 #### Delete
 ```http

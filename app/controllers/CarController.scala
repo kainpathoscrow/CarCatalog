@@ -22,14 +22,19 @@ class CarController @Inject()(service: CarService, val controllerComponents: Con
     }
   }
 
-  def read = Action(parse.json) { implicit request => // TODO better parse query string instead of json body
-      request.body.validate[CarsRequestParams].fold(
-        errors => BadRequest(errors.mkString), // TODO human-readable error list
-        carsRequestParams => processRead(Some(carsRequestParams))
-      )
+  def read = Action { implicit request => // TODO better create QueryStringBindable[CarsRequestParams]
+    val model = request.queryString.get("model").map(_.toList)
+    val color = request.queryString.get("color").map(_.toList)
+    val number = request.queryString.get("number").flatMap(_.headOption)
+    val manufactureYearMin = request.queryString.get("manufactureYearMin").flatMap(_.headOption).flatMap(_.toIntOption)
+    val manufactureYearMax = request.queryString.get("manufactureYearMax").flatMap(_.headOption).flatMap(_.toIntOption)
+    val sortedBy = request.queryString.get("sortedBy").flatMap(_.headOption)
+    val sortedAsc = request.queryString.get("sortingDirection").flatMap(_.headOption).map(_ != "-1")
+
+    processRead(CarsRequestParams(model, color, number, manufactureYearMin, manufactureYearMax, sortedBy, sortedAsc))
   }
-  private def processRead(carsRequestParams: Option[CarsRequestParams]) = {
-    val readResult = service.read(carsRequestParams)
+  private def processRead(carsRequestParams: CarsRequestParams) = {
+    val readResult = service.read(Some(carsRequestParams))
     readResult match {
       case Left(error) => serviceErrorToActionResult(error)
       case Right(cars) => Ok(Json.toJson(cars))
