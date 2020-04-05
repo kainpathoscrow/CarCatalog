@@ -129,7 +129,7 @@ Optional parameters description:
 DELETE /api/cars/[car_id]
 ```
 Deletes a car with a specific id.   
-Returns a deleted car id:
+Returns the deleted car's id:
 ```json
 {
     "deletedId": 26
