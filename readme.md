@@ -139,7 +139,7 @@ Returns deleted car id:
 ```http request
 GET /api/cars/statistics
 ```
-Returns a catalog's statistics:
+Returns a catalog statistics:
 ```json
 {
     "totalCars": 12,
