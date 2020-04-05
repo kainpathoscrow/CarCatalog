@@ -102,8 +102,8 @@ Query parameters description:
 | Parameter | Description |
 | :--- | :--- |
 |**Filters**|
-| `model` |  Car model (case insensitive)<br> _Allowed multiple choice, like ?model=Lada&model=Audi_|
-| `color` |  Car color (case insensitive)<br> _Allowed multiple choice, like ?color=Red&color=Black_ |
+| `model` |  Car model (case insensitive)<br> _Multiple choice allowed, like ?model=Lada&model=Audi_|
+| `color` |  Car color (case insensitive)<br> _Multiple choice allowed, like ?color=Red&color=Black_ |
 | `number` | Exact car number |
 | `manufactureYearMin` | Minimal manufacture year |
 | `manufactureYearMax` | Maximal manufacture year |
