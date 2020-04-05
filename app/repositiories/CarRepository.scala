@@ -58,14 +58,15 @@ class CarRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implici
       .query
 
     val orderAsc = carsRequestParams.sortedAsc.getOrElse(true)
-    def applyOrder(col: ColumnOrdered[_]) = if (orderAsc) col.asc else col.desc
+    def applyFilter(colSelector: CarTable => ColumnOrdered[_]) =
+      filtered.sortBy(table => if (orderAsc) colSelector(table).asc else colSelector(table).desc)
     val filteredAndOrdered = carsRequestParams.sortedBy match {
       case None => filtered
-      case Some("model") => filtered.sortBy(f => applyOrder(f.model))
-      case Some("color") => filtered.sortBy(f => applyOrder(f.color))
-      case Some("number") => filtered.sortBy(f => applyOrder(f.number))
-      case Some("manufactureYear") => filtered.sortBy(f => applyOrder(f.manufactureYear))
-      case Some("createdAt") => filtered.sortBy(f => applyOrder(f.createdAt))
+      case Some("model") => applyFilter(_.model)
+      case Some("color") => applyFilter(_.color)
+      case Some("number") => applyFilter(_.number)
+      case Some("manufactureYear") => applyFilter(_.manufactureYear)
+      case Some("createdAt") => applyFilter(_.createdAt)
       case _ => filtered
     }
 
