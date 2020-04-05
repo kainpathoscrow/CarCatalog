@@ -5,13 +5,29 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 import models.{Car, CarDto, CarStatistics, CarsRequestParams}
 import repositiories.{CarRepository, ColorRepository, ModelRepository}
-import utils.errors.{AlreadyExistsError, DatabaseTimeoutError, NotFoundError, ServiceError}
+import utils.Constants.{maxManufactureYear, minManufactureYear}
+import utils.errors.{AlreadyExistsError, DatabaseTimeoutError, NotFoundError, ServiceError, ValidationError}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, TimeoutException}
 
 class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepository, modelRepository: ModelRepository) {
   def create(car: CarDto): Either[ServiceError, Car] = {
+    val createdCar = for {
+      validated <- processCarValidation(car)
+      created <- processCarCreation(validated)
+    } yield created
+    createdCar
+  }
+  private def processCarValidation(car: CarDto): Either[ServiceError, CarDto] = {
+    if (car.manufactureYear < minManufactureYear || car.manufactureYear > maxManufactureYear){
+      Left(ValidationError(s"Manufacture year should be between $minManufactureYear an $maxManufactureYear"))
+    }
+    else{
+      Right(car)
+    }
+  }
+  private def processCarCreation(car: CarDto): Either[ServiceError, Car] = {
     try {
       val colorFindFuture = colorRepository.findByName(car.color)
       val modelFindFuture = modelRepository.findByName(car.model)
@@ -51,7 +67,7 @@ class CarService @Inject()(repository: CarRepository, colorRepository: ColorRepo
     }
   }
 
-    def statistics: Either[ServiceError, CarStatistics] = {
+  def statistics: Either[ServiceError, CarStatistics] = {
     try{
       val total = Await.result(repository.total, 3.seconds)
       if (total == 0) {
