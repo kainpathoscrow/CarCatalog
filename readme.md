@@ -76,7 +76,7 @@ Creates a car with specified parameters. Returns the created car:
     "createdAt": 1586061362023
 }
 ```
-Model/color value should be one of the values in the models/colors list (see above).  
+Model/color value should be one of the values in the models/colors list (see above), case insensitive.  
 Manufacture year should be between 1885 and (current year + 5 year). 
 
 #### Read
@@ -102,8 +102,8 @@ Query parameters description:
 | Parameter | Description |
 | :--- | :--- |
 |**Filters**|
-| `model` |  Car model <br> _Allowed multiple choice, like ?model=Lada&model=Audi_|
-| `color` |  Car color <br> _Allowed multiple choice, like ?color=Red&color=Black_ |
+| `model` |  Car model (case insensitive)<br> _Allowed multiple choice, like ?model=Lada&model=Audi_|
+| `color` |  Car color (case insensitive)<br> _Allowed multiple choice, like ?color=Red&color=Black_ |
 | `number` | Exact car number |
 | `manufactureYearMin` | Minimal manufacture year |
 | `manufactureYearMax` | Maximal manufacture year |
