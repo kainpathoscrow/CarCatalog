@@ -2,12 +2,14 @@ package repositiories
 
 import javax.inject.Inject
 import models.Color
+import play.api.cache.AsyncCacheApi
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration._
 
-class ColorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+class ColorRepository @Inject() (cache: AsyncCacheApi, dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -25,7 +27,9 @@ class ColorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
     colors.result
   }
 
-  def findByName(name: String): Future[Option[Color]] = db.run {
-    colors.filter(_.name.toUpperCase === name.toUpperCase).result.headOption
+  def findByName(name: String): Future[Option[Color]] = cache.getOrElseUpdate[Option[Color]]("color." + name, 5.minutes){
+    db.run {
+      colors.filter(_.name.toUpperCase === name.toUpperCase).result.headOption
+    }
   }
 }
