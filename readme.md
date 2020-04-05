@@ -65,7 +65,7 @@ Body example (all parameters are **required**):
     "manufactureYear": 2000
 }
 ```
-Creates a car with specified parameters. Returns created car: 
+Creates a car with specified parameters. Returns the created car: 
 ```json
 {
     "id": 27,
@@ -115,8 +115,8 @@ Optional parameters description:
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 |**Filters**|
-| `model` | `array` | List of required car models |
-| `color` | `array` | List of required car colors |
+| `model` | `array` | List of suitable car models |
+| `color` | `array` | List of suitable car colors |
 | `number` | `string` | Exact car number |
 | `manufactureYearMin` | `integer` | Minimal manufacture year |
 | `manufactureYearMax` | `integer` | Maximal manufacture year |
