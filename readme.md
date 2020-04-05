@@ -113,7 +113,7 @@ Query parameters description:
 
 #### Delete
 ```http
-DELETE /api/cars/[car_id]
+DELETE /api/cars/26
 ```
 Deletes a car with a specific id.   
 Returns the deleted car's id:
